@@ -79,6 +79,13 @@ you mount it.
 `claude_desktop_config.json`, `.mcp.json`, `mcp.json`, `.cursor/mcp.json`, `.vscode/mcp.json`,
 `.gemini/settings.json`, `.codex/mcp.json`, `.continue/mcpServers/*.json`.
 
+## Demo
+
+```bash
+./scripts/demo.sh
+```
+Config mode and source mode, plus the CI gate (exit 1 on the risky config, 0 on the minimal one).
+
 ## Fixtures
 
 ```bash
