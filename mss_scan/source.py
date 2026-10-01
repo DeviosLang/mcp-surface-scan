@@ -54,6 +54,13 @@ FAMILIES = [
         r"\bcreateServer\s*\(", r"\bapp\.listen\s*\(",
     ], "A server that binds a port is reachable by anything on the network; bind to localhost and authenticate."),
 
+    ("MCP-209", "medium", "runs database queries", [
+        r"\.query\s*\(", r"\.execute\s*\(", r"\bexecutemany\s*\(", r"\bCREATE\s+TABLE\b",
+        r"\bSELECT\s+.{0,40}\bFROM\b", r"\bpg_query\b", r"\bcursor\.execute\s*\(",
+        r"\bsqlite3\.connect\b", r"\bpsycopg2?\b",
+    ], "A server that runs SQL can read or destroy whatever that credential can reach; give it a "
+        "read-only role scoped to one database."),
+
     ("MCP-207", "info", "declares tools (count)", [
         r"server\.tool\s*\(", r"@mcp\.tool\b", r"\bTool\s*\(\s*name\s*=", r"list_tools",
     ], "Every declared tool is an action the model can take without asking you."),
