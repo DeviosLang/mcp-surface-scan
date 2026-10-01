@@ -60,9 +60,10 @@ FAMILIES = [
 ]
 
 
-def _iter_sources(root: Path):
+def _iter_sources(root: Path, allow_dist: bool = False):
+    skip = SKIP_DIRS - ({"dist", "build"} if allow_dist else set())
     for dirpath, dirnames, filenames in __import__("os").walk(root):
-        dirnames[:] = [d for d in dirnames if d not in SKIP_DIRS]
+        dirnames[:] = [d for d in dirnames if d not in skip]
         for fn in filenames:
             p = Path(dirpath) / fn
             if p.suffix in SOURCE_EXT and not TEST_FILE.search(str(p)):
@@ -71,9 +72,12 @@ def _iter_sources(root: Path):
 
 def scan_source(root: Path, max_files=4000):
     root = Path(root).resolve()
+    # A published npm package ships only dist/; fall back to it when there is no source tree,
+    # otherwise we would silently report "nothing" for the thing people actually install.
+    allow_dist = not any(_iter_sources(root))
     counts = {fid: [] for fid, *_ in [(f[0],) for f in FAMILIES]}
     n = 0
-    for p in _iter_sources(root):
+    for p in _iter_sources(root, allow_dist=allow_dist):
         if n >= max_files:
             break
         n += 1
