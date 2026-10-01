@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mcp-surface-scan"
+version = "0.1.0"
+description = "Report what the MCP servers in a config can actually reach — before you mount them."
+readme = "README.md"
+requires-python = ">=3.9"
+license = {file = "LICENSE"}
+keywords = ["mcp", "security", "ai", "agent", "supply-chain", "capability"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
+    "Topic :: Security",
+]
+authors = [{name = "CHANGE-ME", email = "CHANGE-ME@example.com"}]
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=7"]
+
+[project.urls]
+Homepage = "https://github.com/CHANGE-ME/mcp-surface-scan"
+
+[project.scripts]
+mss = "mss_scan.cli:main"
+
+[tool.setuptools]
+packages = ["mss_scan"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
