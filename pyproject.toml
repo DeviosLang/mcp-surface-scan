@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mcp-surface-scan"
-version = "0.1.0"
+version = "0.2.0"
 description = "Report what the MCP servers in a config can actually reach — before you mount them."
 readme = "README.md"
 requires-python = ">=3.9"

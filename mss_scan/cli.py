@@ -1,7 +1,8 @@
 from __future__ import annotations
 import argparse, json, sys
 from pathlib import Path
-from .rules import RULES, SEV_ORDER, scan_path
+from .rules import SEV_ORDER, scan_path
+from . import source
 from . import __version__
 
 BANNER = "mcp-surface-scan {} - what does an MCP server get to do?\n"
@@ -29,8 +30,16 @@ def main(argv=None):
     ap.add_argument("--format", choices=["text", "json", "sarif"], default="text")
     ap.add_argument("--min", default="low", choices=list(SEV_ORDER))
     ap.add_argument("--fail-on", default="none", choices=["none"] + list(SEV_ORDER))
+    ap.add_argument("--config-only", action="store_true", help="only read client configs")
+    ap.add_argument("--source-only", action="store_true", help="only read the server's source tree")
     a = ap.parse_args(argv)
-    fs = [f for f in scan_path(Path(a.path)) if SEV_ORDER.get(f["severity"], 9) <= SEV_ORDER[a.min]]
+    root = Path(a.path)
+    found = []
+    if not a.source_only:
+        found += scan_path(root)
+    if not a.config_only:
+        found += source.scan(root)
+    fs = [f for f in found if SEV_ORDER.get(f["severity"], 9) <= SEV_ORDER[a.min]]
     if a.format == "json":
         print(json.dumps(fs, indent=2))
     elif a.format == "sarif":

@@ -3,6 +3,7 @@ import subprocess, sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from mss_scan import source  # noqa: E402
 from mss_scan.rules import scan_path, SEV_ORDER  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -53,3 +54,27 @@ def test_sarif_shape(tmp_path):
     run = doc["runs"][0]
     assert run["tool"]["driver"]["name"] == "mcp-surface-scan"
     assert run["results"]
+
+
+def test_source_scan_reports_capability_families():
+    """A tree with command execution and file writes must be reported; a bare lib must not."""
+    import tempfile
+    with tempfile.TemporaryDirectory() as d:
+        root = Path(d)
+        (root / "server.py").write_text(
+            "import subprocess\\n"
+            "def run(cmd):\\n"
+            "    subprocess.run(cmd, shell=False)\\n"
+            "    open('/tmp/x', 'w').write('data')\\n")
+        fs = {f["id"] for f in source.scan(root)}
+    assert "MCP-201" in fs and "MCP-202" in fs, fs
+
+
+def test_source_scan_ignores_test_files():
+    import tempfile
+    with tempfile.TemporaryDirectory() as d:
+        root = Path(d)
+        (root / "tests").mkdir()
+        (root / "tests" / "test_server.py").write_text("import subprocess; subprocess.run('x')\\n")
+        fs = {f["id"] for f in source.scan(root)}
+    assert "MCP-201" not in fs, fs

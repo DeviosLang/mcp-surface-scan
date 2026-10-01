@@ -47,6 +47,33 @@ mcp-surface-scan 0.1.0 - what does an MCP server get to do?
 Severity is deliberately uneven on purpose: "runs a local process" is `info`, because that is what
 MCP servers do. The findings are the parts you can change.
 
+## Two modes: the config, and the source
+
+The config tells you how a server is started; the source tells you what it can do once it runs.
+
+```bash
+mss ~/.config/claude                       # config: what each declared server is handed
+mss ./some-mcp-server --source-only        # source: what the code can reach
+mss ./some-mcp-server                      # both
+```
+
+Source mode reports capability families (a reviewer's first pass, regex based — it points at
+places, never claims a call is exploitable):
+
+| id | family |
+|---|---|
+| `MCP-201` | executes OS commands (`exec`/`spawn`/`subprocess`) |
+| `MCP-202` | writes to the filesystem |
+| `MCP-203` | reads files / walks directories |
+| `MCP-204` | makes network requests |
+| `MCP-205` | reads credentials from the environment |
+| `MCP-206` | listens on the network / all interfaces |
+| `MCP-207` | how many tools it declares (every one is an action the model can take) |
+| `MCP-208` | package lifecycle script that runs on install |
+
+Test files are excluded — they state what the code does under test, not what the server does when
+you mount it.
+
 ## Configs it understands
 
 `claude_desktop_config.json`, `.mcp.json`, `mcp.json`, `.cursor/mcp.json`, `.vscode/mcp.json`,
